@@ -31,7 +31,7 @@
 
         h1 {
             font-size: 3rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             color: #bb86fc;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -74,6 +74,12 @@
             color: #9e9e9e;
         }
 
+        .location {
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            color: #bb86fc;
+        }
+
         .message {
             font-size: 1.5rem;
             margin-top: 2rem;
@@ -112,7 +118,8 @@
 <body>
     <div class="container">
         <h1>The Final Countdown</h1>
-        <div class="date-display">Until May 15th, 2025, 11:00 AM</div>
+        <div class="date-display">Until May 15th, 2025, 11:00 AM ET</div>
+        <div class="location">Indiana Time</div>
         <div class="countdown">
             <div class="time-segment">
                 <div id="days" class="time-value">--</div>
@@ -136,12 +143,43 @@
     </div>
 
     <script>
-        // Set the target date: May 15th, 2025 at 11:00 AM
-        const targetDate = new Date(2025, 4, 15, 11, 0, 0, 0).getTime();
+        // Function to create a specific date in ET (Eastern Time)
+        function createEasternTime(year, month, day, hours, minutes, seconds, milliseconds) {
+            // Create date object in local time
+            const date = new Date(year, month, day, hours, minutes, seconds, milliseconds);
+            
+            // Note: This handles the conversion to Eastern Time regardless of user's local time zone
+            // It works by creating a date string specifying Eastern Time, then parsing it back into a Date object
+            const easternDateString = date.toLocaleString("en-US", {
+                timeZone: "America/New_York"
+            });
+            
+            // This creates a new Date object with the correct ET time at the user's local time
+            const easternDate = new Date(easternDateString);
+            
+            // Now we need to convert this back to the equivalent target timestamp
+            // We find the difference in minutes between local and ET time
+            const localTimezoneOffset = date.getTimezoneOffset();
+            const easternTimezoneOffset = 240; // ET is UTC-4 during DST, UTC-5 during standard time
+                                              // 240 minutes = 4 hours (for EDT)
+                                              // Would be 300 minutes = 5 hours (for EST)
+                                              // We use 240 for May since that's in DST
+            
+            // Adjusting for the timezone difference
+            const timezoneDifference = easternTimezoneOffset - localTimezoneOffset;
+            
+            // Add the timezone difference in milliseconds
+            return date.getTime() + timezoneDifference * 60 * 1000;
+        }
         
-        // Display target and current time for debugging
+        // Set the target date: May 15th, 2025 at 11:00 AM Eastern Time
+        const targetDate = createEasternTime(2025, 4, 15, 11, 0, 0, 0);
+        
+        // Display target and current time
         function updateCurrentTime() {
             const now = new Date();
+            
+            // Display current time in user's local time
             document.getElementById("current-time").textContent = 
                 `Current time: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
         }
