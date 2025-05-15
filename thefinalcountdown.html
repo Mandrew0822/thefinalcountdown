@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Final Countdown</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            transition: background-color 0.5s;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            width: 600px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            color: #bb86fc;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem 0;
+        }
+
+        .time-segment {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-value {
+            font-size: 3rem;
+            font-weight: bold;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            padding: 1rem;
+            min-width: 4rem;
+            color: #03dac6;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .time-label {
+            font-size: 1rem;
+            color: #b0b0b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .date-display {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            color: #9e9e9e;
+        }
+
+        .message {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            color: #cf6679;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .pulsate {
+            animation: pulsate 2s infinite;
+        }
+
+        @keyframes pulsate {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .time-value {
+                font-size: 2rem;
+                min-width: 3rem;
+                padding: 0.7rem;
+            }
+            
+            .time-label {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Final Countdown</h1>
+        <div class="date-display">Until May 15th, 2025, 11:00 AM</div>
+        <div class="countdown">
+            <div class="time-segment">
+                <div id="days" class="time-value">--</div>
+                <span class="time-label">Days</span>
+            </div>
+            <div class="time-segment">
+                <div id="hours" class="time-value">--</div>
+                <span class="time-label">Hours</span>
+            </div>
+            <div class="time-segment">
+                <div id="minutes" class="time-value">--</div>
+                <span class="time-label">Minutes</span>
+            </div>
+            <div class="time-segment">
+                <div id="seconds" class="time-value">--</div>
+                <span class="time-label">Seconds</span>
+            </div>
+        </div>
+        <div id="current-time" class="date-display">Current time: --</div>
+        <div id="message" class="message">The time has come.</div>
+    </div>
+
+    <script>
+        // Set the target date: May 15th, 2025 at 11:00 AM
+        const targetDate = new Date(2025, 4, 15, 11, 0, 0, 0).getTime();
+        
+        // Display target and current time for debugging
+        function updateCurrentTime() {
+            const now = new Date();
+            document.getElementById("current-time").textContent = 
+                `Current time: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+        }
+        
+        updateCurrentTime();
+        
+        // Update the countdown every second
+        const countdown = setInterval(function() {
+            // Get the current date and time
+            const now = new Date().getTime();
+            
+            // Update display of current time
+            updateCurrentTime();
+            
+            // Find the time remaining between now and the target date
+            const timeRemaining = targetDate - now;
+            
+            // Calculate days, hours, minutes, and seconds
+            const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+            
+            // Display the result
+            document.getElementById("days").textContent = String(days).padStart(2, '0');
+            document.getElementById("hours").textContent = String(hours).padStart(2, '0');
+            document.getElementById("minutes").textContent = String(minutes).padStart(2, '0');
+            document.getElementById("seconds").textContent = String(seconds).padStart(2, '0');
+            
+            // If the countdown is over, display a message
+            if (timeRemaining < 0) {
+                clearInterval(countdown);
+                document.getElementById("days").textContent = "00";
+                document.getElementById("hours").textContent = "00";
+                document.getElementById("minutes").textContent = "00";
+                document.getElementById("seconds").textContent = "00";
+                
+                const messageElement = document.getElementById("message");
+                messageElement.style.opacity = 1;
+                messageElement.classList.add("pulsate");
+                
+                // Change background to more dramatic color
+                document.body.style.backgroundColor = "#1a0000";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
